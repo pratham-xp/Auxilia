@@ -1,0 +1,90 @@
+<?php
+  include_once 'header.php' ;
+  if (!isset($_SESSION["useruid"])){
+  header("Location: index.php");
+  }
+  include 'includes/dbh.inc.php';
+
+?>
+  <section id="clothes-page">
+
+  <div class="donate_form">
+  <h2>REQUEST CLOTHING</h2>
+  <form class="input-group" method="post">
+      <div><label for="Gender">Enter the gender type of clothing:</label><br></div>
+      <div>
+      <select name="Gender" id="">
+        <option value="Select">Select</option>}  
+        <option value="Male">Male</option>  
+        <option value="Female">Female</option>  
+        <option value="Unisex">Unisex</option>
+      </select>
+        </div>
+
+      <div> Enter the type of clothing you would like to request </div>
+      <input type="text" class="input-field" name="clothingtype" placeholder="Type of clothing">
+      <div><label for="Size">Enter the size of clothes: </label></div>
+      <div>
+      <select name="Size" id="">
+        <option value="Select">Select</option>}
+        <option value="X Small">XS</option>   
+        <option value="Small">S</option>  
+        <option value="Medium">M</option>  
+        <option value="Large">L</option>
+        <option value="X Large">XL</option>
+        <option value="XX Large">XXL</option>
+        <option value="Freesize">Freesize</option>
+      </select>
+      </div>
+      <div>Enter your location</div>
+      <input type="text" class="input-field" name="location" placeholder="Location">
+
+      <div><label for="Comments">Comments: </label></div>
+      <input type="text" class="input-field" name="note" placeholder="Comment">
+
+      <div>Date</div>
+      <input type="date" name="donodate" value="2021-07-22" min="2021-01-01" max="2022-12-31">
+      <button type="submit" class="submit-btn" name="submit">REQUEST</button>
+  </form>
+  </div>
+
+  <?php
+  if (isset($_POST["submit"]))
+{
+
+  $donoid= $_SESSION["useruid"];
+  $dononame= $_SESSION["usename"];
+  $clocate= $_POST["location"];
+  $gender= $_POST["Gender"];
+  $ctype= $_POST["clothingtype"];
+  $size= $_POST["Size"];
+  $comment = $_POST["note"];
+  $ddate = $_POST["donodate"];
+  $sql = "INSERT INTO clothes (ruserid, rname, rlocation, rgender, clothes_type, rsize, comments, rdate) VALUES(?, ?, ?, ?, ?, ?, ?, ?); ";
+  $stmt = mysqli_stmt_init($conn);
+  if (!mysqli_stmt_prepare($stmt, $sql))
+  {
+    header("location: ../signup.php?error=stmtfailed");
+    exit();
+
+  }
+  mysqli_stmt_bind_param($stmt, "ssssssss", $donoid, $dononame, $clocate, $gender, $ctype, $size, $comment, $ddate);
+  mysqli_stmt_execute($stmt);
+  mysqli_stmt_close($stmt);
+?>
+<script>
+          swal({
+          title: "<?php echo "successfully, requested $ctype" ;?>",
+          text: "<?php echo "Thank you for using Auxilia,$dononame" ;?>",
+          icon: "success",
+          button: "Close",
+          });
+        </script>
+        <?php
+    }
+    ?>
+</section>
+
+<?php
+  include_once 'footer.php' ;
+?>
